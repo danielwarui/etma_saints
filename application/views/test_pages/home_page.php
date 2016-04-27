@@ -41,80 +41,80 @@
         var saints = $.get('../../Saints/saintsSuggest');
         var REGEX_id = '([a-z0-9])?';
         var xhr;
-$(function () {
-        $('#select-to').selectize({
-            persist: false,
-            maxItems: 1,    
-            valueField: 'id',
-            labelField: 'name',
-            searchField: ['name' , 'number'],
-            options: saints,
-            load: function (query, callback) {
-                if (!query.length) return callback();
+        $(function () {
+            $('#select-to').selectize({
+                persist: false,
+                maxItems: 1,
+                valueField: 'id',
+                labelField: 'name',
+                searchField: ['name', 'number'],
+                options: saints,
+                load: function (query, callback) {
+                    if (!query.length) return callback();
 
-                xhr && xhr.abort();
-                xhr = $.ajax({
-                    url: '../../Saints/saintsSuggest',
-                    type: 'GET',
-                    dataType: 'JSON',
-                    //data: 'query=' + query,
-                    success: function (data) {
-                        callback(data.slice(0, 50));
-                    },
-                    error: function () {
-                        callback();
-                    }
-                });
-            },
-            render: {
-                item: function (item, escape) {
-                    return '<div>' +
-                        (item.name ? '<span class="name">' + escape(item.name) + '</span>' : '') +
-                        (item.id ? '<span class="email">' + ' '+ escape(item.number) + '</span>' : '') +
-                        '</div>';
+                    xhr && xhr.abort();
+                    xhr = $.ajax({
+                        url: '../../Saints/saintsSuggest',
+                        type: 'GET',
+                        dataType: 'JSON',
+                        //data: 'query=' + query,
+                        success: function (data) {
+                            callback(data.slice(0, 50));
+                        },
+                        error: function () {
+                            callback();
+                        }
+                    });
                 },
-                option: function (item, escape) {
-                    var label = item.name || item.number;
-                    var caption = item.name ? ' '+ item.number : null;
-                    return '<div>' +
-                        '<span class="label"> ' + escape(label) + '</span>' +
-                        (caption ? '<span class="caption"> ' + escape(caption) + '</span>' : '') +
-                        '</div>';
-                }
-            },
-            createFilter: function (input) {
-                var match, regex;
+                render: {
+                    item: function (item, escape) {
+                        return '<div>' +
+                            (item.name ? '<span class="name">' + escape(item.name) + '</span>' : '') +
+                            (item.id ? '<span class="email">' + ' ' + escape(item.number) + '</span>' : '') +
+                            '</div>';
+                    },
+                    option: function (item, escape) {
+                        var label = item.name || item.number;
+                        var caption = item.name ? ' ' + item.number : null;
+                        return '<div>' +
+                            '<span class="label"> ' + escape(label) + '</span>' +
+                            (caption ? '<span class="caption"> ' + escape(caption) + '</span>' : '') +
+                            '</div>';
+                    }
+                },
+                createFilter: function (input) {
+                    var match, regex;
 
-                // id@address.com
-                regex = new RegExp('^' + REGEX_id + '$', 'i');
-                match = input.match(regex);
-                if (match) return !this.options.hasOwnProperty(match[0]);
+                    // id@address.com
+                    regex = new RegExp('^' + REGEX_id + '$', 'i');
+                    match = input.match(regex);
+                    if (match) return !this.options.hasOwnProperty(match[0]);
 
-                // name <id@address.com>
-                regex = new RegExp('^([^<]*)\<' + REGEX_id + '\>$', 'i');
-                match = input.match(regex);
-                if (match) return !this.options.hasOwnProperty(match[2]);
+                    // name <id@address.com>
+                    regex = new RegExp('^([^<]*)\<' + REGEX_id + '\>$', 'i');
+                    match = input.match(regex);
+                    if (match) return !this.options.hasOwnProperty(match[2]);
 
-                return false;
-            },
-            create: function (input) {
-                if ((new RegExp('^' + REGEX_id + '$', 'i')).test(input)) {
-                    return {id: input};
+                    return false;
+                },
+                create: function (input) {
+                    if ((new RegExp('^' + REGEX_id + '$', 'i')).test(input)) {
+                        return {id: input};
+                    }
+                    var match = input.match(new RegExp('^([^<]*)\<' + REGEX_id + '\>$', 'i'));
+                    if (match) {
+                        return {
+                            id: match[2],
+                            name: $.trim(match[1])
+                        };
+                    }
+                    alert('Invalid id address.');
+                    return false;
                 }
-                var match = input.match(new RegExp('^([^<]*)\<' + REGEX_id + '\>$', 'i'));
-                if (match) {
-                    return {
-                        id: match[2],
-                        name: $.trim(match[1])
-                    };
-                }
-                alert('Invalid id address.');
-                return false;
-            }
+            });
         });
-        });
 
-//        $('#select-to').trigger('input');
+        //        $('#select-to').trigger('input');
     </script>
     <!--Let browser know website is optimized for mobile-->
 </head>
